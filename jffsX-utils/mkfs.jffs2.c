@@ -608,7 +608,7 @@ static uint8_t *file_buffer = NULL;		/* file buffer contains the actual erase bl
 static int out_ofs = 0;
 static int erase_block_size = 131072; /* 0x20000 = 131072 = 128 */
 static int pad_fs_size = 0;
-static int add_cleanmarkers = 1;
+static int add_cleanmarkers = 0;
 static struct jffs2_unknown_node cleanmarker;
 static int cleanmarker_size = sizeof(cleanmarker);
 static unsigned char ffbuf[16] = {
