@@ -70,7 +70,7 @@ static inline void list_del(struct list_head *entry)
 static LIST_HEAD(jffs2_compressor_list);
 
 /* Actual compression mode */
-static int jffs2_compression_mode = JFFS2_COMPR_MODE_PRIORITY;
+static int jffs2_compression_mode = JFFS2_COMPR_MODE_SIZE;
 
 void jffs2_set_compression_mode(int mode)
 {
