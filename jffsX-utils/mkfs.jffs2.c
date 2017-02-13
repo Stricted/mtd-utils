@@ -606,7 +606,7 @@ static void cleanup(struct filesystem_entry *dir)
 static uint32_t ino = 0;
 static uint8_t *file_buffer = NULL;		/* file buffer contains the actual erase block*/
 static int out_ofs = 0;
-static int erase_block_size = 65536;
+static int erase_block_size = 131072; /* 0x20000 = 131072 = 128 */
 static int pad_fs_size = 0;
 static int add_cleanmarkers = 1;
 static struct jffs2_unknown_node cleanmarker;
