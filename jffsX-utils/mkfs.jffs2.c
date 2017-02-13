@@ -109,7 +109,7 @@ static int verbose = 0;
 static int squash_uids = 0;
 static int squash_perms = 0;
 static int fake_times = 0;
-int target_endian = __BYTE_ORDER;
+int target_endian = __BIG_ENDIAN;
 
 uint32_t find_hardlink(struct filesystem_entry *e)
 {
