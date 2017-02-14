@@ -607,6 +607,7 @@ static uint32_t ino = 0;
 static uint8_t *file_buffer = NULL;		/* file buffer contains the actual erase block*/
 static int out_ofs = 0;
 static int erase_block_size = 131072; /* 0x20000 = 131072 = 128 */
+static int page_size = 4096;
 static int pad_fs_size = -1;
 static int add_cleanmarkers = 0;
 static struct jffs2_unknown_node cleanmarker;
@@ -615,9 +616,7 @@ static unsigned char ffbuf[16] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
-/* We set this at start of main() using sysconf(), -1 means we don't know */
-/* When building an fs for non-native systems, use --pagesize=SIZE option */
-int page_size = -1;
+
 
 #include "compr.h"
 
@@ -1565,12 +1564,6 @@ int main(int argc, char **argv)
 	char *compr_name = NULL;
 	int compr_prior  = -1;
 	int warn_page_size = 0;
-
-	page_size = sysconf(_SC_PAGESIZE);
-	if (page_size < 0) /* System doesn't know so ... */
-		page_size = 4096; /* ... we make an educated guess */
-	if (page_size != 4096)
-		warn_page_size = 1; /* warn user if page size not 4096 */
 
 	jffs2_compressors_init();
 
