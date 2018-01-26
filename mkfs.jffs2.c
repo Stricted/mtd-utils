@@ -1614,7 +1614,7 @@ int main(int argc, char **argv)
 	jffs2_compressors_init();
 
 	while ((opt = getopt_long(argc, argv,
-					"D:d:r:s:o:qUPfh?vVe:lbp::nc:m:x:X:Lty:i:", long_options, &c)) >= 0)
+					"D:d:r:s:o:qUPfh?vVe:lbp::nc:m:x:X:Lty:i:N:", long_options, &c)) >= 0)
 	{
 		switch (opt) {
 			case 'D':
