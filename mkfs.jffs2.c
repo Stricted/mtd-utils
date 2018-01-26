@@ -111,6 +111,8 @@ static int squash_uids = 0;
 static int squash_perms = 0;
 static int fake_times = 0;
 int target_endian = __BYTE_ORDER;
+static char default_compression_name[16] = "priority";
+static char donotcompress_filelist[1024] = "";
 
 uint32_t find_hardlink(struct filesystem_entry *e)
 {
@@ -608,10 +610,23 @@ static int pad_fs_size = 0;
 static int add_cleanmarkers = 1;
 static struct jffs2_unknown_node cleanmarker;
 static int cleanmarker_size = sizeof(cleanmarker);
+#if 1 /* CONFIG_MIPS_BRCM */
+/* Pad with 0x00 which is JFFS2_DIRTY_BITMASK rather than 0xff in order to
+ * prevent "Empty flash at 0xXXXXXXXX ends at 0xYYYYYYYY" JFFS2 messages
+ * from displaying during the kernel boot.  This message displays if the
+ * block size passed to this utility (-e) is less than the actual flash
+ * chip block size.
+ */
+static unsigned char ffbuf[16] =
+{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0x00
+};
+#else
 static unsigned char ffbuf[16] =
 { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
 	0xff, 0xff, 0xff, 0xff, 0xff
 };
+#endif
 
 /* We set this at start of main() using sysconf(), -1 means we don't know */
 /* When building an fs for non-native systems, use --pagesize=SIZE option */
@@ -718,6 +733,26 @@ static void write_dirent(struct filesystem_entry *e)
 	padword();
 }
 
+static int do_not_compress(char *name)
+{
+	int ret = 0;
+	if( donotcompress_filelist[0] != '\0' )
+	{
+		char *tmp = strstr(donotcompress_filelist, name);
+		if (NULL != tmp)
+		{
+			tmp += strlen(name);
+			if ('\0' == *tmp || ' ' == *tmp)
+			{
+				printf("not compressing file, %s\n", name);
+ 				ret = 1;
+			}		
+		}
+	}
+
+	return( ret );
+}
+
 static unsigned int write_regular_file(struct filesystem_entry *e)
 {
 	int fd, len;
@@ -762,6 +797,9 @@ static unsigned int write_regular_file(struct filesystem_entry *e)
 	ri.ctime = cpu_to_je32(statbuf->st_ctime);
 	ri.mtime = cpu_to_je32(statbuf->st_mtime);
 	ri.isize = cpu_to_je32(statbuf->st_size);
+
+	if( do_not_compress(e->fullname) )
+		jffs2_set_compression_mode_name("none");
 
 	while ((len = read(fd, buf, page_size))) {
 		unsigned char *tbuf = buf;
@@ -840,6 +878,9 @@ static unsigned int write_regular_file(struct filesystem_entry *e)
 	}
 	free(buf);
 	close(fd);
+
+	jffs2_set_compression_mode_name(default_compression_name);
+
 	return totcomp;
 }
 
@@ -1697,6 +1738,7 @@ int main(int argc, char **argv)
 					  if (jffs2_set_compression_mode_name(optarg)) {
 						  errmsg_die("Unknown compression mode %s", optarg);
 					  }
+					  strcpy(default_compression_name, optarg);
 					  break;
 			case 'x':
 					  if (jffs2_disable_compressor_name(optarg)) {
@@ -1751,6 +1793,9 @@ int main(int argc, char **argv)
 						  | (1 << JFFS2_XPREFIX_ACL_DEFAULT);
 					  break;
 #endif
+			case 'N':
+	                  strcpy(donotcompress_filelist, optarg);
+					  break;
 		}
 	}
 	if (warn_page_size) {
