@@ -5,9 +5,9 @@ VERSION = 1.4.6
 
 CPPFLAGS += -I./include -I$(BUILDDIR)/include -I./ubi-utils/include $(ZLIBCPPFLAGS) $(LZOCPPFLAGS)
 
-ifeq ($(WITHOUT_XATTR), 1)
+#ifeq ($(WITHOUT_XATTR), 1)
   CPPFLAGS += -DWITHOUT_XATTR
-endif
+#endif
 ifeq ($(WITHOUT_LZO), 1)
   CPPFLAGS += -DWITHOUT_LZO
 else

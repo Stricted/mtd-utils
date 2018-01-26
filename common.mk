@@ -16,9 +16,9 @@ CFLAGS += $(WFLAGS)
 SECTION_CFLAGS := $(call cc-option,-ffunction-sections -fdata-sections -Wl$(comma)--gc-sections)
 CFLAGS += $(SECTION_CFLAGS)
 
-ifneq ($(WITHOUT_LARGEFILE), 1)
-  CPPFLAGS += -D_FILE_OFFSET_BITS=64
-endif
+#ifneq ($(WITHOUT_LARGEFILE), 1)
+#  CPPFLAGS += -D_FILE_OFFSET_BITS=64
+#endif
 
 DESTDIR?=
 PREFIX=/usr
